@@ -1,17 +1,21 @@
-import React from 'react';
+import React from 'react'
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import Router from './router/router';
 
-ReactDOM.render(
-  <React.StrictMode>
+
+class App extends React.Component{
+    render() {
+      return <div>
+                <ol>
+                    <li><a href="#/gameChess">gameChess</a></li>
+                    <li><a href="#/coreContent">coreContent</a></li>
+                    <li><a href="#/about">about</a></li>
+                </ol>
+                <Router />
+        </div>
+    }
+}
+
+ReactDOM.render((
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+), document.getElementById('root'))
