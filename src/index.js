@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom';
 import Router from './router/router';
-
+import "./index.css";
 
 class App extends React.Component{
     render() {
