@@ -3,9 +3,10 @@ import {HashRouter, Route, Switch} from 'react-router-dom';
 // import GameChess from "../components/gameChess";
 // import CoreContent from "../components/coreContent";
 // import SeniorGuidance from "../components/seniorGuidance";
-const GameChess = lazy(() => import('../components/gameChess'));
+const GameChess = lazy(() => import('../components/gameChess/index.tsx'));
 const CoreContent = lazy(() => import('../components/coreContent'));
 const SeniorGuidance = lazy(() => import('../components/seniorGuidance'));
+const Api = lazy(() => import('../components/api'));
 
 class About extends React.Component{
     render() {
@@ -21,6 +22,7 @@ const BasicRoute = () => (
                 <Route exact path="/gameChess" component={GameChess}/>
                 <Route exact path="/coreContent" component={CoreContent}/>
                 <Route exact path="/seniorGuidance" component={SeniorGuidance}/>
+                <Route exact path="/api" component={Api}/>
                 <Route exact path="/about" component={About}/>
             </Switch>
         </Suspense>

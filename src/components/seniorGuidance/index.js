@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {ThemeContext, themes} from './context/theme-context';
 import ThemedButton from './context/themed-button';
 import ErrorBoundary from "./errorBoundary/errorBoundary";
+import PropTypes from 'prop-types';
 
 // 1.Context
 // 一个使用 ThemedButton 的中间组件
@@ -347,6 +348,138 @@ class MouseTracker extends React.Component {
         );
     }
 }
+// 16.PropTypes 进行类型检查
+class MyComponent extends React.Component {
+    static defaultProps = {
+        name: 'MyComponent'
+    }
+    render() {
+      // 这必须只有一个元素，否则控制台会打印警告。
+      const children = this.props.children;
+      return (
+        <div>
+            <p>{this.props.name}</p>
+            <Message></Message>
+            {children}
+        </div>
+      );
+    }
+}
+class Message extends React.Component {
+    render() {
+      return (
+        <h6>Message:{this.props.name}</h6>
+      );
+    }
+}
+// 指定 props 的默认值：
+Message.defaultProps = {
+    name: 'Stranger'
+};
+MyComponent.propTypes = {
+  // 你可以将属性声明为 JS 原生类型，默认情况下
+  // 这些属性都是可选的。
+  optionalArray: PropTypes.array,
+  optionalBool: PropTypes.bool,
+  optionalFunc: PropTypes.func,
+  optionalNumber: PropTypes.number,
+  optionalObject: PropTypes.object,
+  optionalString: PropTypes.string,
+  optionalSymbol: PropTypes.symbol,
+  // 任何可被渲染的元素（包括数字、字符串、元素或数组）
+  // (或 Fragment) 也包含这些类型。
+  optionalNode: PropTypes.node,
+  // 一个 React 元素。
+  optionalElement: PropTypes.element,
+  // 一个 React 元素类型（即，MyComponent）。
+  optionalElementType: PropTypes.elementType,
+  // 你也可以声明 prop 为类的实例，这里使用
+  // JS 的 instanceof 操作符。
+  optionalMessage: PropTypes.instanceOf(Message),
+  // 你可以让你的 prop 只能是特定的值，指定它为
+  // 枚举类型。
+  optionalEnum: PropTypes.oneOf(['News', 'Photos']),
+  // 一个对象可以是几种类型中的任意一个类型
+  optionalUnion: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+    PropTypes.instanceOf(Message)
+  ]),
+  // 可以指定一个数组由某一类型的元素组成
+  optionalArrayOf: PropTypes.arrayOf(PropTypes.number),
+  // 可以指定一个对象由某一类型的值组成
+  optionalObjectOf: PropTypes.objectOf(PropTypes.number),
+  // 可以指定一个对象由特定的类型值组成
+  optionalObjectWithShape: PropTypes.shape({
+    color: PropTypes.string,
+    fontSize: PropTypes.number
+  }),
+  // An object with warnings on extra properties
+  optionalObjectWithStrictShape: PropTypes.exact({
+    name: PropTypes.string,
+    quantity: PropTypes.number
+  }),   
+  // 你可以在任何 PropTypes 属性后面加上 `isRequired` ，确保
+  // 这个 prop 没有被提供时，会打印警告信息。
+  requiredFunc: PropTypes.func.isRequired,
+  // 任意类型的数据
+  requiredAny: PropTypes.any.isRequired,
+  // 你可以指定一个自定义验证器。它在验证失败时应返回一个 Error 对象。
+  // 请不要使用 `console.warn` 或抛出异常，因为这在 `onOfType` 中不会起作用。
+  customProp: function(props, propName, componentName) {
+      console.log(props, propName, componentName, props[propName], !/matchme/.test(props[propName]));
+    if (!/matchme/.test(props[propName])) {
+      console.log(props, propName, componentName);
+      return new Error(
+        'Invalid prop `' + propName + '` supplied to' +
+        ' `' + componentName + '`. Validation failed.'
+      );
+    }
+  },
+  // 你也可以提供一个自定义的 `arrayOf` 或 `objectOf` 验证器。
+  // 它应该在验证失败时返回一个 Error 对象。
+  // 验证器将验证数组或对象中的每个值。验证器的前两个参数
+  // 第一个是数组或对象本身
+  // 第二个是他们当前的键。
+  customArrayProp: PropTypes.arrayOf(function(propValue, key, componentName, location, propFullName) {
+    if (!/matchme/.test(propValue[key])) {
+      return new Error(
+        'Invalid prop `' + propFullName + '` supplied to' +
+        ' `' + componentName + '`. Validation failed.'
+      );
+    }
+  })
+};
+// 17.非受控组件
+class NameForm extends React.Component {
+    constructor(props) {
+      super(props);
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.input = React.createRef();
+      this.fileInput = React.createRef();
+    }
+    handleSubmit(event) {
+      console.log('A name was submitted: ' + this.input.current.value);
+      console.log(`Selected file - ${this.fileInput.current.files[0].name}`);
+      event.preventDefault();
+    }
+    render() {
+      return (
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Name:
+            <input type="text" ref={this.input} />
+          </label>
+          <label>
+            Upload file:
+            <input type="file" ref={this.fileInput} />
+          </label>
+          <br />
+          <input type="submit" value="Submit" />
+        </form>
+      );
+    }
+  }
 
 class App extends React.Component{
     constructor(props) {
@@ -430,7 +563,27 @@ class App extends React.Component{
             </div>
             <h3>13. Render Props</h3>
             <div>
-                <MouseTracker></MouseTracker>
+                <React.StrictMode>
+                    <MouseTracker></MouseTracker>
+                </React.StrictMode>
+            </div>
+            <h3>14.静态类型检查</h3>
+            <div>
+                Flow 和 TypeScript 等这些静态类型检查器，可以在运行前识别某些类型的问题。
+            </div>
+            <h3>15.严格模式</h3>
+            <div>
+            </div>
+            <h3>16.PropTypes 进行类型检查</h3>
+            <div>
+                <MyComponent requiredAny={true} requiredFunc={()=>{}} customProp={"matchme6u"}></MyComponent>
+            </div>
+            <h3>17.非受控组件(受控组件中，表单数据是由 React 组件来管理的。非受控组件中，表单数据将交由 DOM 节点来处理。)</h3>
+            <div>
+                <NameForm></NameForm>
+            </div>
+            <h3>18.Web Components</h3>
+            <div>
             </div>
         </div>
     }
