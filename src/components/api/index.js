@@ -100,8 +100,71 @@ class App extends React.Component{
             <h3>6.合成事件</h3>
             <div>
               <ul>
-                
+                <li>a.剪贴板事件
+                  <p>onCopy、 onCut、 onPaste</p>
+                </li>
+                <li>b.复合事件
+                  <p>onCompositionEnd、 onCompositionStart、 onCompositionUpdate</p>
+                </li>
+                <li>c.键盘事件
+                  <p>onKeyDown、 onKeyPress、 onKeyUp</p>
+                </li>
+                <li>d.焦点事件
+                  <p>onFocus、 onBlur</p>
+                </li>
+                <li>e.表单事件
+                  <p>onChange、 onInput、 onInvalid、 onReset、 onSubmit </p>
+                </li>
+                <li>f.通用事件
+                  <p>onError、 onLoad</p>
+                </li>
+                <li>g.Mouse Events
+                  <p>onClick onContextMenu onDoubleClick onDrag onDragEnd onDragEnter onDragExit
+onDragLeave onDragOver onDragStart onDrop onMouseDown onMouseEnter onMouseLeave
+onMouseMove onMouseOut onMouseOver onMouseUp</p>
+                </li>
+                <li>h.选择事件
+                  <p>onSelect</p>
+                </li>
+                <li>i.触摸事件
+                  <p>onTouchCancel onTouchEnd onTouchMove onTouchStart</p>
+                </li>
+                <li>j.UI 事件
+                  <p>onScroll</p>
+                </li>
+                <li>k.滚轮事件
+                  <p>onWheel</p>
+                </li>
+                <li>l.媒体事件
+                  <p>onEnded onError onLoadedData onLoadedMetadata onLoadStart onPause onPlay
+onPlaying onProgress onRateChange onSeeked onSeeking onStalled onSuspend
+onTimeUpdate onVolumeChange onWaiting</p>
+                </li>
+                <li>m.图像事件
+                  <p>onLoad onError</p>
+                </li>
+                <li>n.动画事件
+                  <p>onAnimationStart onAnimationEnd onAnimationIteration</p>
+                </li>
+                <li>o.过渡事件
+                  <p>onTransitionEnd</p>
+                </li>
+                <li>p.其他事件
+                  <p>nToggle</p>
+                </li>
               </ul>
+            </div>
+            <h3>7.Test Utilities</h3>
+            <div>
+              搭配你所选的测试框架，轻松实现 React 组件测试
+            </div>
+            <h3>8.Test Renderer</h3>
+            <div>
+              提供了一个 React 渲染器，用于将 React 组件渲染成纯 JavaScript 对象
+            </div>
+            <h3>9.JavaScript 环境要求</h3>
+            <div>
+              React 16 依赖集合类型 Map 和 Set, 考虑在你的应用库中包含一个全局的 polyfill ，例如 core-js 或 babel-polyfill 
             </div>
           </div>
         </div>

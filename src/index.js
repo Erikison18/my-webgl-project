@@ -11,6 +11,7 @@ class App extends React.Component{
                     <li><a href="#/coreContent">coreContent</a></li>
                     <li><a href="#/seniorGuidance">seniorGuidance</a></li>
                     <li><a href="#/api">api</a></li>
+                    <li><a href="#/hook">hook</a></li>
                     <li><a href="#/about">about</a></li>
                 </ol>
                 <Router />
