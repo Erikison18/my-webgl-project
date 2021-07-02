@@ -8,6 +8,7 @@ const CoreContent = lazy(() => import('../components/coreContent'));
 const SeniorGuidance = lazy(() => import('../components/seniorGuidance'));
 const Api = lazy(() => import('../components/api'));
 const Hook = lazy(() => import('../components/hook'));
+const Faq = lazy(() => import('../components/faq'));
 
 class About extends React.Component{
     render() {
@@ -25,6 +26,7 @@ const BasicRoute = () => (
                 <Route exact path="/seniorGuidance" component={SeniorGuidance}/>
                 <Route exact path="/api" component={Api}/>
                 <Route exact path="/hook" component={Hook}/>
+                <Route exact path="/faq" component={Faq}/>
                 <Route exact path="/about" component={About}/>
             </Switch>
         </Suspense>

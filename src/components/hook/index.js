@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext, useReducer, useRef, useImperativeHandle } from 'react'
 import "./index.css"
 
 // State Hook、 State Hook
@@ -93,6 +93,129 @@ function ChatRecipientPicker() {
     </>
   );
 }
+// 7.Hook API 索引
+function Counter({initialCount}) {
+  const [count, setCount] = useState(initialCount);
+  return (
+    <>
+      Count: {count}
+      <button onClick={() => setCount(initialCount)}>Reset</button>
+      <button onClick={() => setCount(prevCount => prevCount - 1)}>-</button>
+      <button onClick={() => setCount(prevCount => prevCount + 1)}>+</button>
+    </>
+  );
+}
+const themes = {
+  light: {
+    foreground: "#000000",
+    background: "#eeeeee"
+  },
+  dark: {
+    foreground: "#ffffff",
+    background: "#222222"
+  }
+};
+const ThemeContext = React.createContext({theme: themes.light,  toggleTheme: () => {}});
+function ContextHook() {
+  const [themeState, setTheme] = useState(themes.dark)
+  function toggleTheme() {
+    setTheme((prevTheme)=> {
+      return prevTheme === themes.dark
+        ? themes.light
+        : themes.dark;
+    });
+  }
+  return (
+    <ThemeContext.Provider value={{
+      theme: themeState,
+      toggleTheme: toggleTheme,
+    }}>
+      <Toolbar />
+    </ThemeContext.Provider>
+  );
+}
+function Toolbar(props) {
+  return (
+    <div>
+      <ThemedButton />
+    </div>
+  );
+}
+function ThemedButton() {
+  const theme = useContext(ThemeContext);
+  return (
+    <>
+      <button style={{ background: theme.theme.background, color: theme.theme.foreground }}>
+        I am styled by theme context!
+      </button>
+      <button onClick={theme.toggleTheme}>toggleTheme</button>
+    </>
+  );
+}
+function init(initialCount) {
+  return {count: initialCount};
+}
+// const initialState = {count: 0};
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    case 'reset':
+      return init(action.payload);
+    default:
+      throw new Error();
+  }
+}
+function Counter1({initialCount}) {
+  // const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialCount, init);
+  return (
+    <>
+      Count: {state.count}
+      <button
+        onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+        Reset
+      </button>
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+function TextInputWithFocusButton() {
+  const inputEl = useRef(null);
+  const onButtonClick = () => {
+    // `current` 指向已挂载到 DOM 上的文本输入元素
+    inputEl.current.focus();
+  };
+  return (
+    <>
+      <input ref={inputEl} type="text" />
+      <button onClick={onButtonClick}>Focus the input</button>
+    </>
+  );
+}
+function FancyInput(props, ref) {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current.focus();
+    }
+  }));
+  return <input ref={inputRef} defaultValue="1111"/>;
+}
+const FancyButton = React.forwardRef(FancyInput);
+function MyRef() {
+  const ref = React.createRef();
+  function onClick() {
+    ref.current.focus();
+  };
+  return <>
+    <FancyButton ref={ref}>Click me!</FancyButton>
+    <button onClick={onClick}>focus</button>
+  </>
+}
 
 class App extends React.Component{
   render() {
@@ -129,6 +252,59 @@ class App extends React.Component{
           <div>
             <p>自定义 Hook 是一个函数，其名称以 “use” 开头，函数内部可以调用其他的 Hook</p>
             <ChatRecipientPicker></ChatRecipientPicker>
+          </div>
+          <h3>7.Hook API 索引</h3>
+          <div>
+            <ul>
+              <li>
+                useState
+                <div>
+                  <Counter initialCount={10}></Counter>
+                </div>
+              </li>
+              <li>
+                useEffect---完成副作用操作
+              </li>
+              <li>
+                useContext
+                <div>
+                  <ContextHook></ContextHook>
+                </div>
+              </li>
+              <li>
+                useReducer
+                <div>
+                  <Counter1 initialCount={20}></Counter1>
+                </div>
+              </li>
+              <li>
+                useCallback
+              </li>
+              <li>
+                useMemo---可以把 useMemo 作为性能优化的手段
+              </li>
+              <li>
+                useRef
+                <div>
+                  <TextInputWithFocusButton />
+                </div>
+              </li>
+              <li>
+                useImperativeHandle
+                <div>
+                  <MyRef />
+                </div>
+              </li>
+              <li>
+                useLayoutEffect
+              </li>
+              <li>
+                useDebugValue
+              </li>
+            </ul>
+          </div>
+          <h3>8.Hooks FAQ</h3>
+          <div>
           </div>
         </div>
     }
