@@ -164,7 +164,7 @@ onTimeUpdate onVolumeChange onWaiting</p>
             </div>
             <h3>9.JavaScript 环境要求</h3>
             <div>
-              React 16 依赖集合类型 Map 和 Set, 考虑在你的应用库中包含一个全局的 polyfill ，例如 core-js 或 babel-polyfill 
+              React 16 依赖集合类型 Map 和 Set, 考虑在你的应用库中包含一个全局的 polyfill ，例如 core-js 或 babel-polyfill
             </div>
           </div>
         </div>

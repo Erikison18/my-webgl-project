@@ -62,10 +62,10 @@ const comment = {
 class Clock extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {date: new Date()};
+    this.state = { date: new Date() };
   }
   componentDidMount() {
-    this.timeID = setInterval(()=> {
+    this.timeID = setInterval(() => {
       this.tick();
     }, 1000);
   }
@@ -90,7 +90,7 @@ class Clock extends React.Component {
 class Toggle extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {isToggleOn: true};
+    this.state = { isToggleOn: true };
     // 为了在回调中使用 `this`，这个绑定是必不可少的
     this.handleClick = this.handleClick.bind(this);
   }
@@ -107,10 +107,10 @@ class Toggle extends React.Component {
     );
   }
 }
-function UserGreeting(props) {
+function UserGreeting() {
   return <h1>Welcome back!</h1>;
 }
-function GuestGreeting(props) {
+function GuestGreeting() {
   return <h1>Please sign up.</h1>;
 }
 function Greeting(props) {
@@ -139,13 +139,13 @@ class LoginControl extends React.Component {
     super(props);
     this.handleLoginClick = this.handleLoginClick.bind(this);
     this.handleLogoutClick = this.handleLogoutClick.bind(this);
-    this.state = {isLoggedIn: false};
+    this.state = { isLoggedIn: false };
   }
   handleLoginClick() {
-    this.setState({isLoggedIn: true});
+    this.setState({ isLoggedIn: true });
   }
   handleLogoutClick() {
-    this.setState({isLoggedIn: false});
+    this.setState({ isLoggedIn: false });
   }
   render() {
     const isLoggedIn = this.state.isLoggedIn;
@@ -189,15 +189,15 @@ function Blog(props) {
   );
 }
 const posts = [
-  {id: 1, title: 'Hello World', content: 'Welcome to learning React!'},
-  {id: 2, title: 'Installation', content: 'You can install React from npm.'}
+  { id: 1, title: 'Hello World', content: 'Welcome to learning React!' },
+  { id: 2, title: 'Installation', content: 'You can install React from npm.' }
 ];
 // 6.表单
 class MyForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: '' ,
+      value: '',
       valueSelect: 'coconut',
     };
     this.handleChange = this.handleChange.bind(this);
@@ -205,10 +205,10 @@ class MyForm extends React.Component {
     this.handleChangeSelect = this.handleChangeSelect.bind(this);
   }
   handleChange(event) {
-    this.setState({value: event.target.value});
+    this.setState({ value: event.target.value });
   }
   handleChangeSelect(event) {
-    this.setState({valueSelect: event.target.value});
+    this.setState({ valueSelect: event.target.value });
   }
   handleSubmit(event) {
     alert('提交的名字: ' + this.state.value);
@@ -278,7 +278,7 @@ class TemperatureInput extends React.Component {
       <fieldset>
         <legend>Enter temperature in {scaleNames[scale]}:</legend>
         <input value={temperature}
-               onChange={this.handleChange} />
+          onChange={this.handleChange} />
       </fieldset>
     );
   }
@@ -288,13 +288,13 @@ class Calculator extends React.Component {
     super(props);
     this.handleCelsiusChange = this.handleCelsiusChange.bind(this);
     this.handleFahrenheitChange = this.handleFahrenheitChange.bind(this);
-    this.state = {temperature: '', scale: 'c'};
+    this.state = { temperature: '', scale: 'c' };
   }
   handleCelsiusChange(temperature) {
-    this.setState({scale: 'c', temperature});
+    this.setState({ scale: 'c', temperature });
   }
   handleFahrenheitChange(temperature) {
-    this.setState({scale: 'f', temperature});
+    this.setState({ scale: 'f', temperature });
   }
   render() {
     const scale = this.state.scale;
@@ -343,14 +343,14 @@ class SignUpDialog extends React.Component {
     super(props);
     this.handleChange = this.handleChange.bind(this);
     this.handleSignUp = this.handleSignUp.bind(this);
-    this.state = {login: ''};
+    this.state = { login: '' };
   }
   render() {
     return (
       <Dialog title="Mars Exploration Program"
-              message="How should we refer to you?">
+        message="How should we refer to you?">
         <input value={this.state.login}
-               onChange={this.handleChange} />
+          onChange={this.handleChange} />
         <button onClick={this.handleSignUp}>
           Sign Me Up!
         </button>
@@ -359,7 +359,7 @@ class SignUpDialog extends React.Component {
     );
   }
   handleChange(e) {
-    this.setState({login: e.target.value});
+    this.setState({ login: e.target.value });
   }
   handleSignUp() {
     alert(`Welcome aboard, ${this.state.login}!`);
@@ -367,12 +367,12 @@ class SignUpDialog extends React.Component {
 }
 // 9.构建一个应用
 const PRODUCTS = [
-  {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
-  {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
-  {category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
-  {category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
-  {category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
-  {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+  { category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football' },
+  { category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball' },
+  { category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball' },
+  { category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch' },
+  { category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5' },
+  { category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7' }
 ];
 class ProductCategoryRow extends React.Component {
   render() {
@@ -391,7 +391,7 @@ class ProductRow extends React.Component {
     const product = this.props.product;
     const name = product.stocked ?
       product.name :
-      <span style={{color: 'red'}}>
+      <span style={{ color: 'red' }}>
         {product.name}
       </span>;
     return (
@@ -516,54 +516,54 @@ class FilterableProductTable extends React.Component {
   }
 }
 
-class App extends React.Component{
+class App extends React.Component {
   render() {
-      return <div>
-          <h3>1.jsx</h3>
-          <div>
-            {jsx}
-          </div>
-          <h3>2.组件 & Props</h3>
-          <div>
-            <Comment 
-              date={comment.date}
-              text={comment.text}
-              author={comment.author}
-            ></Comment>
-          </div>
-          <h3>3.State & 生命周期</h3>
-          <div>
-            <Clock></Clock>
-          </div>
-          <h3>4.事件处理 & 条件渲染</h3>
-          <div>
-            <Toggle></Toggle>
-            <LoginControl></LoginControl>
-          </div>
-          <h3>5.列表 & Key</h3>
-          <div>
-            <Blog posts={posts} />
-          </div>
-          <h3>6.表单</h3>
-          <div>
-            <MyForm></MyForm>
-          </div>
-          <h3>7.状态提升</h3>
-          <div>
-            <Calculator></Calculator>
-          </div>
-          <h3>8.组合 vs 继承</h3>
-          <div>
-            <SignUpDialog>
-              <div>继承: 没有需要使用继承来构建组件层次的情况。建议将其提取为一个单独的 JavaScript 模块，如函数、对象或者类。</div>
-            </SignUpDialog>
-          </div>
-          <h3>9.构建一个应用</h3>
-          <div>
-            <FilterableProductTable products={PRODUCTS}></FilterableProductTable>
-          </div>
-        </div>
-    }
+    return <div>
+      <h3>1.jsx</h3>
+      <div>
+        {jsx}
+      </div>
+      <h3>2.组件 & Props</h3>
+      <div>
+        <Comment
+          date={comment.date}
+          text={comment.text}
+          author={comment.author}
+        ></Comment>
+      </div>
+      <h3>3.State & 生命周期</h3>
+      <div>
+        <Clock></Clock>
+      </div>
+      <h3>4.事件处理 & 条件渲染</h3>
+      <div>
+        <Toggle></Toggle>
+        <LoginControl></LoginControl>
+      </div>
+      <h3>5.列表 & Key</h3>
+      <div>
+        <Blog posts={posts} />
+      </div>
+      <h3>6.表单</h3>
+      <div>
+        <MyForm></MyForm>
+      </div>
+      <h3>7.状态提升</h3>
+      <div>
+        <Calculator></Calculator>
+      </div>
+      <h3>8.组合 vs 继承</h3>
+      <div>
+        <SignUpDialog>
+          <div>继承: 没有需要使用继承来构建组件层次的情况。建议将其提取为一个单独的 JavaScript 模块，如函数、对象或者类。</div>
+        </SignUpDialog>
+      </div>
+      <h3>9.构建一个应用</h3>
+      <div>
+        <FilterableProductTable products={PRODUCTS}></FilterableProductTable>
+      </div>
+    </div>
+  }
 }
 
 export default App

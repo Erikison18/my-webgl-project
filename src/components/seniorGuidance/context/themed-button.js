@@ -1,21 +1,21 @@
 import React from 'react';
-import {ThemeContext} from './theme-context';
+import { ThemeContext } from './theme-context';
 
 class ThemedButton extends React.Component {
   render() {
     // let props = this.props;
     // let theme = this.context;
     return (
-    //   <button
-    //     {...props}
-    //     style={{backgroundColor: theme.background, color: theme.foreground}}
-    //   />
+      //   <button
+      //     {...props}
+      //     style={{backgroundColor: theme.background, color: theme.foreground}}
+      //   />
       <ThemeContext.Consumer>
-        {({theme, toggleTheme}) => 
+        {({ theme, toggleTheme }) =>
         (
-            <button onClick={toggleTheme} style={{backgroundColor: theme.background, color: theme.foreground}}>
-                Toggle Theme
-            </button>
+          <button onClick={toggleTheme} style={{ backgroundColor: theme.background, color: theme.foreground }}>
+            Toggle Theme
+          </button>
         )
         }
       </ThemeContext.Consumer>

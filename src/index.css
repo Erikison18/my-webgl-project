@@ -1,6 +1,9 @@
 @import "~antd/dist/antd.css";
 body {
   font: 14px "Century Gothic", Futura, sans-serif;
+}
+
+.page-content{
   margin: 20px;
 }
 

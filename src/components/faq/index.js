@@ -12,11 +12,11 @@ function MyComponent() {
     fetch("https://restapi.amap.com/v3/weather/weatherInfo?parameters")
       .then(res => res.json({city: "110101"}))
       .then(
-        (result) => {
+        () => {
           setIsLoaded(true);
           // setItems(result.items);
           setItems([
-            { "id": 1, "name": "Apples",  "price": "$2" },
+            { "id": 1, "name": "Apples", "price": "$2" },
             { "id": 2, "name": "Peaches", "price": "$5" }
           ]);
         },
