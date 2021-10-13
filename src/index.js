@@ -24,6 +24,9 @@ class App extends React.Component {
                     <Menu.Item key="shadow">
                         <a href="#/shadow">着色器</a>
                     </Menu.Item>
+                    <Menu.Item key="triangle">
+                        <a href="#/triangle">绘制三角形</a>
+                    </Menu.Item>
                 </Menu>
                 <div className="page-content">
                     <Router />
