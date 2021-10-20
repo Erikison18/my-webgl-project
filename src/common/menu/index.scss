@@ -1,0 +1,13 @@
+
+.ant-menu.main-menu {
+    background-color: black;
+    border: none;
+    
+    .ant-menu-item a {
+      color: #fff;
+    }
+  
+    .ant-menu-item-selected a{
+      color: #1890ff;
+    }
+}
