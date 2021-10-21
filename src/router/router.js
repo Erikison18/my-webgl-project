@@ -3,6 +3,7 @@ import {HashRouter, Route, Switch, Redirect} from 'react-router-dom';
 const Shadow = lazy(() => import('../components/shadow/index.jsx'));
 const Scene = lazy(() => import('../components/scene/index.jsx'));
 const SolarSystem = lazy(() => import('../components/solarSystem/index.jsx'));
+const Earth = lazy(() => import('../components/earth/index.jsx'));
 
 
 const BasicRoute = (props) => (
@@ -14,6 +15,7 @@ const BasicRoute = (props) => (
                 <Route exact path="/shadow" component={Shadow}/>
                 <Route exact path="/scene" component={Scene}/>
                 <Route exact path="/solarSystem" component={SolarSystem}/>
+                <Route exact path="/earth" component={Earth}/>
             </Switch>
         </Suspense>
     </HashRouter>
