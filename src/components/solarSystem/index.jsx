@@ -12,6 +12,26 @@ import 天王星 from "./img/天王星.jpg";
 import 天王星环 from "./img/天王星环.jpg";
 import 土星 from "./img/土星.jpg";
 import 土星环 from "./img/土星环.jpg";
+import 太阳1 from "./ui/太阳.png";
+import 地球1 from "./ui/地球.png";
+import 海王星1 from "./ui/海王星.png";
+import 火星1 from "./ui/火星.png";
+import 金星1 from "./ui/金星.png";
+import 木星1 from "./ui/木星.png";
+import 水星1 from "./ui/水星.png";
+import 天王星1 from "./ui/天王星.png";
+import 土星1 from "./ui/土星.png";
+const imgList = {
+  太阳: 太阳1,
+  地球: 地球1,
+  海王星: 海王星1,
+  火星: 火星1,
+  金星: 金星1,
+  木星: 木星1,
+  水星: 水星1,
+  天王星: 天王星1,
+  土星: 土星1,
+};
 
 class Game extends React.Component {
   constructor(props) {
@@ -26,31 +46,40 @@ class Game extends React.Component {
     this.texLoader = new window.THREE.TextureLoader();
     let cloud = this.cloudFun(); //星云
     scene.add(cloud);
-    let intersectsArr = [];
-    let Data = this.data()
+    this.intersectsArr = [];
+    let Data = this.data();
     // 创建太阳
     let sun = this.createSphereMesh(Data.sun.R, Data.sun.URL);
     sun.name = Data.sun.name;
-    intersectsArr.push(sun)
-    scene.add(sun)
+    this.intersectsArr.push(sun);
+    scene.add(sun);
     // 创建行星
     let planetGroup = new window.THREE.Group();
-    Data.planet.forEach((obj)=> {
+    Data.planet.forEach((obj) => {
       let planet = null;
       if (obj.ring) {
-        planet = this.createringPlanetMesh(obj.sphere.R, obj.sphere.URL, obj.ring.r, obj.ring.R, obj.ring.URL)
+        planet = this.createringPlanetMesh(
+          obj.sphere.R,
+          obj.sphere.URL,
+          obj.ring.r,
+          obj.ring.R,
+          obj.ring.URL
+        );
+        planet.children[0].name = obj.name;
+        planet.children[0].revolutionR = obj.revolutionR;
+        planet.children[0].angle = 2 * Math.PI * Math.random();
+        this.intersectsArr.push(planet.children[0]);
       } else {
         planet = this.createSphereMesh(obj.R, obj.URL);
+        this.intersectsArr.push(planet);
       }
       planet.revolutionR = obj.revolutionR;
       planet.angle = 2 * Math.PI * Math.random();
       planet.name = obj.name;
       planetGroup.add(planet);
-      intersectsArr.push(planet)
       let line = this.circle(obj.revolutionR);
       scene.add(line);
-    })
-    console.log(planetGroup);
+    });
     scene.add(planetGroup);
     /**
      * 光源设置
@@ -66,9 +95,9 @@ class Game extends React.Component {
     let width = window.innerWidth; //窗口宽度
     let height = window.innerHeight; //窗口高度
     let k = width / height; //窗口宽高比
-    let s = 200; //三维场景显示范围控制系数，系数越大，显示的范围越大
+    let s = 300; //三维场景显示范围控制系数，系数越大，显示的范围越大
     //创建相机对象
-    let camera = new window.THREE.OrthographicCamera(
+    this.camera = new window.THREE.OrthographicCamera(
       -s * k,
       s * k,
       s,
@@ -76,8 +105,8 @@ class Game extends React.Component {
       1,
       1500
     );
-    camera.position.set(400, 200, 300); //设置相机位置
-    camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
+    this.camera.position.set(400, 200, 300); //设置相机位置
+    this.camera.lookAt(scene.position); //设置相机方向(指向的场景对象)
     /**
      * 创建渲染器对象
      */
@@ -88,16 +117,61 @@ class Game extends React.Component {
     renderer.setClearColor(0x101010, 1); //设置背景颜色
     document.getElementById("three-board").appendChild(renderer.domElement); //body元素中插入canvas对象
     //执行渲染操作   指定场景、相机作为参数
+    this.chooseMesh = null;
+    let clock = new THREE.Clock();
+    let FPS = 30;
+    let refreshTime = 1 / FPS;
+    let timeS = 0;
     function render() {
-      requestAnimationFrame(render);
-      renderer.render(scene, camera); //执行渲染操作
+      sun.rotation.y += 0.01;
+      let deltaTime = clock.getDelta();
+      timeS = timeS + deltaTime;
+      if (timeS > refreshTime) {
+        // 优化性能，超过最低30频率的时间间隔，才刷新
+        renderer.render(scene, this.camera);
+        timeS = 0;
+      }
+      planetGroup.children.forEach(function (obj) {
+        obj.rotation.y += 0.01;
+        obj.angle += (0.005 / obj.revolutionR) * 400;
+        obj.position.set(
+          obj.revolutionR * Math.sin(obj.angle),
+          0,
+          obj.revolutionR * Math.cos(obj.angle)
+        );
+      });
+      cloud.rotation.x += 0.0002;
+      cloud.rotation.y += 0.0002;
+      cloud.rotation.z += 0.0002;
+
+      requestAnimationFrame(render.bind(this));
+
+      if (this.chooseMesh) {
+        let worldVector = new THREE.Vector3(
+          this.chooseMesh.position.x,
+          this.chooseMesh.position.y,
+          this.chooseMesh.position.z,
+        );
+        let standardVector = worldVector.project(this.camera);
+        let a = window.innerWidth / 2;
+        let b = window.innerHeight / 2;
+        let x = Math.round(standardVector.x * a + a);
+        let y = Math.round(-standardVector.y * b + b);
+
+        this.img.style.left = x + 'px';
+        this.img.style.top = y - 280 + 'px';
+      }
     }
-    render();
+    render.call(this);
+    let controls = new window.THREE.OrbitControls(this.camera, renderer.domElement); //创建控件对象
 
-    let controls = new window.THREE.OrbitControls(camera, renderer.domElement); //创建控件对象
-    controls.addEventListener("change", render); //监听鼠标、键盘事件
+    this.img = document.createElement("img");
+    this.img.style.position = "absolute";
+    this.img.style.display = "block";
+    document.body.appendChild(this.img);
+    addEventListener('click', this.choose.bind(this));
 
-    console.log(window.THREE, scene)
+    console.log(window.THREE, scene, controls);
   }
   // 创造星云
   cloudFun() {
@@ -130,7 +204,7 @@ class Game extends React.Component {
   createMesh(geometry, URL) {
     let material = new window.THREE.MeshBasicMaterial({
       map: this.texLoader.load(URL),
-      side:window.THREE.DoubleSide,
+      side: window.THREE.DoubleSide,
     });
     let mesh = new window.THREE.Mesh(geometry, material);
     return mesh;
@@ -152,11 +226,35 @@ class Game extends React.Component {
     let geometry = new THREE.Geometry();
     geometry.setFromPoints(points);
     let material = new window.THREE.LineBasicMaterial({
-      color: 0xccffff
+      color: 0xccffff,
     });
     let line = new window.THREE.LineLoop(geometry, material);
     line.rotateX(Math.PI / 2);
     return line;
+  }
+  choose(event) {
+    this.img.src = '';
+    this.chooseMesh = null;
+    let Sx = event.clientX;
+    let Sy = event.clientY;
+
+    let x = (Sx / window.innerWidth) * 2 - 1;
+    let y = -(Sy / window.innerHeight) * 2 + 1;
+
+    let raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x, y), this.camera);
+    let intersects = raycaster.intersectObjects(this.intersectsArr, false);
+    console.log(this.intersectsArr)
+    console.log(intersects)
+    if (intersects.length > 0) {
+      console.log(intersects[0].object.name);
+      this.img.src = imgList[intersects[0].object.name];
+      if (intersects[0].object.name === "天王星" || intersects[0].object.name === "土星") {
+        this.chooseMesh = intersects[0].object.parent
+      } else {
+        this.chooseMesh = intersects[0].object
+      }
+    }
   }
   // 星球数据
   data() {
