@@ -4,7 +4,8 @@ const Shadow = lazy(() => import('../components/shadow/index.jsx'));
 const Scene = lazy(() => import('../components/scene/index.jsx'));
 const SolarSystem = lazy(() => import('../components/solarSystem/index.jsx'));
 const Earth = lazy(() => import('../components/earth/index.jsx'));
-
+const Kongmingdeng = lazy(() => import('../components/kongmingdeng/index.jsx'));
+const Chongdong = lazy(() => import('../components/chongdong/index.jsx'));
 
 const BasicRoute = (props) => (
     <HashRouter>
@@ -16,6 +17,8 @@ const BasicRoute = (props) => (
                 <Route exact path="/scene" component={Scene}/>
                 <Route exact path="/solarSystem" component={SolarSystem}/>
                 <Route exact path="/earth" component={Earth}/>
+                <Route exact path="/kongmingdeng" component={Kongmingdeng}/>
+                <Route exact path="/chongdong" component={Chongdong}/>
             </Switch>
         </Suspense>
     </HashRouter>
