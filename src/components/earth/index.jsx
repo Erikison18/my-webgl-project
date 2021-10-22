@@ -42,23 +42,23 @@ class Game extends React.Component {
     sprite.scale.set(245, 245, 1);
     // 添加地球
     let box = new THREE.SphereGeometry(100, 100, 100);
-    let texture = this.textureLoader.load(imgList.Earth.png);
+    let texture = this.textureLoader.load(imgList.Earth);
     let textureNormal = this.textureLoader.load(imgList.EarthNormal);
     let textureSpecular = this.textureLoader.load(imgList.EarthSpec);
     let material = new THREE.MeshPhongMaterial({
       map: texture,
       normalMap: textureNormal,
-      normalScale: new THREE.Vector2(2.9, 2.9),
+      normalScale: new THREE.Vector2(10, 10),
       specularMap: textureSpecular,
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.9,
     });
     let mesh = new THREE.Mesh(box, material);
     this.group.add(mesh);
     // 添加大气
     let box2 = new THREE.SphereGeometry(100.001, 100, 100);
     let texture1 = this.textureLoader.load(imgList.噪声);
-    let texture2 = this.textureLoader.load(imgList.大气2);
+    let texture2 = this.textureLoader.load(imgList.大气);
     texture1.wrapS = THREE.RepeatWrapping;
     texture1.wrapT = THREE.RepeatWrapping;
     texture2.wrapS = THREE.RepeatWrapping;
@@ -97,13 +97,13 @@ class Game extends React.Component {
     /**
      * 光源设置
      */
-    let directionalLight = new THREE.DirectionalLight(0x777215, 0.9);
+    let directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
     directionalLight.position.set(400, 200, 300);
     scene.add(directionalLight);
-    let directionalLight2 = new THREE.DirectionalLight(0x777215, 0.9);
+    let directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.9);
     directionalLight2.position.set(-400, -200, -300);
     scene.add(directionalLight2);
-    let ambient = new THREE.AmbientLight(0x777215, 0.6);
+    let ambient = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambient);
     /**
      * 相机设置
