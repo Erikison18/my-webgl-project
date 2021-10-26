@@ -6,6 +6,7 @@ const SolarSystem = lazy(() => import('../components/solarSystem/index.jsx'));
 const Earth = lazy(() => import('../components/earth/index.jsx'));
 const Kongmingdeng = lazy(() => import('../components/kongmingdeng/index.jsx'));
 const Chongdong = lazy(() => import('../components/chongdong/index.jsx'));
+const Bofang = lazy(() => import('../components/bofang/index.jsx'));
 
 const BasicRoute = (props) => (
     <HashRouter>
@@ -19,6 +20,7 @@ const BasicRoute = (props) => (
                 <Route exact path="/earth" component={Earth}/>
                 <Route exact path="/kongmingdeng" component={Kongmingdeng}/>
                 <Route exact path="/chongdong" component={Chongdong}/>
+                <Route exact path="/bofang" component={Bofang}/>
             </Switch>
         </Suspense>
     </HashRouter>

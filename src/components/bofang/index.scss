@@ -1,0 +1,36 @@
+.operate {
+  position: absolute;
+  color: #fff;
+  z-index: 102;
+  font-size: 16px;
+  width: 500px;
+  height: 80px;
+  bottom: 0px;
+  img {
+    cursor: pointer;
+  }
+  .progress {
+    position: absolute;
+    left: 100px;
+    top: 19px;
+    font-size: 16px;
+    color: #ffffff;
+    width: 400px;
+  }
+  .progress-con {
+    position: absolute;
+    left: 180px;
+    top: 10px;
+    font-size: 16px;
+  }
+  .speed {
+    position: absolute;
+    left: 100px;
+    top: 49px;
+  }
+  .speed-con {
+    position: absolute;
+    left: 180px;
+    top: 40px;
+  }
+}

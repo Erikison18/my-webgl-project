@@ -177,7 +177,7 @@ class Game extends React.Component {
   cloudFun() {
     let geom = new window.THREE.Geometry();
     let material = new window.THREE.ParticleBasicMaterial({
-      size: 2,
+      size: 0.05,
       vertexColors: true,
     });
     let n = 1200;
