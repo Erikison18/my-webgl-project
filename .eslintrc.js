@@ -20,6 +20,7 @@ module.exports = {
         "react",
         "@typescript-eslint"
     ],
+    "ignorePatterns": ["src/common/threejs/"],
     "rules": {
         "eqeqeq": 2, //必须使用 === 和 !==
         "no-empty-function": 2, //禁止空函数

@@ -38,6 +38,15 @@ class MyMenu extends React.Component {
         }, {
             key: "bofang",
             name: "3D播放",
+        }, {
+            key: "yuzhuo",
+            name: "玉镯",
+        }, {
+            key: "fenzi",
+            name: "化学分子",
+        }, {
+            key: "houseDesign",
+            name: "房屋设计",
         }]
         return (<Menu mode="horizontal" onClick={this.handleClick} selectedKeys={[current]} className="main-menu">
                     {

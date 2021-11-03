@@ -30,8 +30,8 @@ class Game extends React.Component {
      */
     let scene = new window.THREE.Scene();
     // 轴辅助
-    let AxesHelper = new THREE.AxesHelper(100);
-    scene.add(AxesHelper);
+    // let AxesHelper = new THREE.AxesHelper(100);
+    // scene.add(AxesHelper);
 
     this.action = null;
     let mixer = null;
