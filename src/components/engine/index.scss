@@ -1,0 +1,147 @@
+.progress-con{
+    width: 200px;
+    position: absolute;
+    top: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &.hide{
+        display: none;
+    }
+    .ant-progress-text{
+        color: #fff;
+    }
+}
+
+.swiper {
+    position: absolute;
+    right: 5px;
+    top: 500px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5) !important;
+    cursor: pointer;
+    color: #fff;
+    text-align: center;
+    line-height: 50px;
+    font-size: 20px;
+
+    &.prev{
+        right: auto;
+        left: 5px;
+    }
+}
+
+.page{
+    color: rgb(0, 255, 255);
+    width: 60px;
+    height: 60px;
+    border-radius: 30px;
+    left: 50%;
+    bottom: 80px;
+    font-size: 18px;
+    transform: translateX(-50%);
+    // background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+
+    >div{
+        margin-top: 17px;
+        width: 60px;
+        text-align: center;
+    }
+}
+
+#table {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1;
+    border-color: #333333;
+    border-collapse: collapse;
+    
+    th {
+        padding: 10px 16px;
+        font-size: 14px;
+        font-family: '微软雅黑';
+        font-weight: 300;
+        box-sizing: initial;
+    }
+}
+
+#introduction {
+    position: absolute;
+    width: 360px;
+    height: 220px;
+    left: 30px;
+    top: 70px;
+    text-indent: 20px;
+    font-size: 16px;
+    color: #00c4d0;
+    background-image: url(./img/01.png);
+    background-size: 100% 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 28px;
+    z-index: 102;
+}
+
+#name {
+    position: absolute;
+    width: 423px;
+    height: 254px;
+    background-image: url(./img/02.png);
+    background-size: 100% 100%;
+
+    span{
+        color: #00c4d0;
+        font-size: 18px;
+        position: absolute;
+        right: 54px;
+        top: -30px;
+    }
+}
+
+#menu{
+    position: absolute;
+    bottom: 5px;
+    color: #fff;
+    z-index: 102;
+    width: 280px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    >div {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.8) !important;
+        float: left;
+        margin: 0 10px;
+        text-align: center;
+        line-height: 60px;
+        cursor: pointer;
+
+        i{
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-size: 100% 100%;
+            background-image: url(./img/正视图.png);
+
+            &.zheng{
+                background-image: url(./img/正视图.png);
+            }
+            &.fu{
+                background-image: url(./img/俯视图.png);
+            }
+            &.ce{
+                background-image: url(./img/侧视图.png);
+            }
+            &.zhou{
+                background-image: url(./img/轴测图.png);
+            }
+        }
+    }
+}

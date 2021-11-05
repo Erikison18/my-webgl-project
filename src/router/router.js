@@ -10,6 +10,7 @@ const Bofang = lazy(() => import('../components/bofang/index.jsx'));
 const Yuzhuo = lazy(() => import('../components/yuzhuo/index.jsx'));
 const Fenzi = lazy(() => import('../components/fenzi/index.jsx'));
 const HouseDesign = lazy(() => import('../components/houseDesign/index.jsx'));
+const Engine = lazy(() => import('../components/engine/index.jsx'));
 
 const BasicRoute = (props) => (
     <HashRouter>
@@ -27,6 +28,7 @@ const BasicRoute = (props) => (
                 <Route exact path="/yuzhuo" component={Yuzhuo}/>
                 <Route exact path="/fenzi" component={Fenzi}/>
                 <Route exact path="/houseDesign" component={HouseDesign}/>
+                <Route exact path="/engine" component={Engine}/>
             </Switch>
         </Suspense>
     </HashRouter>
