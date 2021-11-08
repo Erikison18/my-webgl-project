@@ -11,6 +11,8 @@ const Yuzhuo = lazy(() => import('../components/yuzhuo/index.jsx'));
 const Fenzi = lazy(() => import('../components/fenzi/index.jsx'));
 const HouseDesign = lazy(() => import('../components/houseDesign/index.jsx'));
 const Engine = lazy(() => import('../components/engine/index.jsx'));
+const Liangcang = lazy(() => import('../components/liangcang/index.jsx'));
+const MechanicalAssembly = lazy(() => import('../components/mechanicalAssembly/index.jsx'));
 
 const BasicRoute = (props) => (
     <HashRouter>
@@ -29,6 +31,8 @@ const BasicRoute = (props) => (
                 <Route exact path="/fenzi" component={Fenzi}/>
                 <Route exact path="/houseDesign" component={HouseDesign}/>
                 <Route exact path="/engine" component={Engine}/>
+                <Route exact path="/liangcang" component={Liangcang}/>
+                <Route exact path="/mechanicalAssembly" component={MechanicalAssembly}/>
             </Switch>
         </Suspense>
     </HashRouter>
