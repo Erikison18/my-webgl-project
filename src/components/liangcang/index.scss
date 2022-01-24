@@ -1,0 +1,35 @@
+#label {
+  visibility: hidden;
+  > div {
+    position: relative;
+    > div {
+      position: absolute;
+      top: -50px;
+      left: 20px;
+      width: 100px;
+      color: #03b5b3;
+    }
+    > div:nth-child(2) {
+      top: -30px;
+      left: 0px;
+    }
+  }
+}
+
+#label3 {
+  visibility: hidden;
+  > div {
+    position: relative;
+    > div {
+      position: absolute;
+      top: -120px;
+      left: 55px;
+      width: 100px;
+      color: #ffffff;
+    }
+    > div:nth-child(2) {
+      top: -100px;
+      left: 0px;
+    }
+  }
+}
