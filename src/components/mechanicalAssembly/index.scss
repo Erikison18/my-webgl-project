@@ -1,0 +1,129 @@
+.progress-con{
+    width: 300px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+
+    &.hide{
+        display: none;
+    }
+    .ant-progress-text{
+        color: #fff;
+    }
+}
+#three-board {
+  position: absolute;
+  top: 100px;
+  left: 200px;
+}
+#top {
+  position: absolute;
+  width: 100%;
+  height: 55px;
+  background: rgb(51, 51, 51);
+  border-bottom: 4px solid #555555;
+  .c-logo {
+    position: absolute;
+    color: rgb(255, 255, 255);
+    top: 8px;
+    left: 5px;
+  }
+  .c-select {
+    position: absolute;
+    color: rgb(255, 255, 255);
+    top: 12px;
+    left: 70px;
+    .ant-select {
+      width: 180px;
+      .ant-select-selector {
+        background: #242424 !important;
+        color: #ffffff !important;
+        border: none;
+      }
+    }
+    .ant-select-arrow {
+      color: #fff;
+    }
+  }
+  #menu {
+    position: absolute;
+    top: 5px;
+    // width: 580px;
+    left: 280px;
+    line-height: 55px;
+    i {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-image: url(./img/最大化4.png);
+      background-size: 100% 100%;
+      margin: auto 15px;
+      cursor: pointer;
+      &.size {
+        background-image: url(./img/不显示尺寸.png);
+        &.SizeBool {
+          background-image: url(./img/尺寸5.png);
+        }
+      }
+      &.smaller {
+        background-image: url(./img/缩小.png);
+      }
+      &.greater {
+        background-image: url(./img/放大.png);
+      }
+      &.zheng {
+        background-image: url(./img/正视图.png);
+      }
+      &.fu {
+        background-image: url(./img/俯视图.png);
+      }
+      &.ce {
+        background-image: url(./img/侧视图.png);
+      }
+      &.zhou {
+        background-image: url(./img/轴测图.png);
+      }
+      &.view {
+        background-image: url(./img/显示.png);
+      }
+      &.hide {
+        background-image: url(./img/隐藏.png);
+      }
+    }
+  }
+  .c-danger {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    line-height: 55px;
+    i {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background-image: url(./img/帮助.png);
+      background-size: 100% 100%;
+      margin: auto 15px;
+      cursor: pointer;
+    }
+  }
+}
+#left{
+    overflow: auto;
+    background: #333333;
+    border-right: solid 1px #444444;
+    position: absolute;
+    top: 100px;
+    width: 200px;
+    bottom: 0px;
+    border-right: 4px solid #555555;
+    .ant-tree{
+        color: #fff;
+        background: transparent;
+        .ant-tree-node-content-wrapper.ant-tree-node-selected{
+            background-color: #222;
+            color: #ccc;
+        }
+    }
+}

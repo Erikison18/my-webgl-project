@@ -2,6 +2,8 @@
 /* eslint-disable no-undef */
 import React from "react";
 import "./index.scss";
+import { Select, Modal, Tree, Progress } from "antd";
+import i0 from "./img/0.png";
 import i03 from "./img/03.jpg";
 import px from "./img/px.jpg";
 import nx from "./img/nx.jpg";
@@ -10,7 +12,9 @@ import ny from "./img/ny.jpg";
 import pz from "./img/pz.jpg";
 import nz from "./img/nz.jpg";
 
+const { Option } = Select;
 const imgList = {
+  i0,
   i03,
   px,
   nx,
@@ -24,6 +28,31 @@ class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      options: [
+        {
+          value: "千斤顶",
+          label: "千斤顶",
+        },
+        {
+          value: "燃油管",
+          label: "燃油管",
+        },
+        {
+          value: "润滑油管",
+          label: "润滑油管",
+        },
+        {
+          value: "燃烧室",
+          label: "燃烧室",
+        },
+        {
+          value: "角接触轴承",
+          label: "角接触轴承",
+        },
+      ],
+      treeData: [],
+      MeshArr: [],
+      SizeBool: true,
       scene: null,
       progressValue: 0,
       progressBool: true,
@@ -31,6 +60,12 @@ class Game extends React.Component {
       currentModel: null,
       left: 0,
       top: 0,
+      ModelName: '',
+      cxtmenu: {
+        left: 400,
+        top: 400,
+        bool: false,
+    },
     };
   }
 
@@ -41,7 +76,8 @@ class Game extends React.Component {
     let scene = new window.THREE.Scene();
     this.setState({ scene });
     // 轴辅助
-    let AxesHelper = new THREE.AxesHelper(100);
+    let AxesHelper = new THREE.AxesHelper(200);
+    AxesHelper.position.y = -54;
     scene.add(AxesHelper);
 
     // let textureLoader = new THREE.TextureLoader();
@@ -57,6 +93,8 @@ class Game extends React.Component {
     let SizeGroup = new THREE.Group();
     let treeData = [
       {
+        key: "01010101",
+        title: "千斤顶",
         id: "01010101",
         label: "千斤顶",
         mesh: null,
@@ -89,6 +127,8 @@ class Game extends React.Component {
         obj.children[0].children[0].name = "千斤顶";
         recursion(obj.children[0].children[0], treeData[0]);
         function recursion(obj, treeobj) {
+          treeobj.key = obj.id;
+          treeobj.title = obj.name;
           treeobj.id = obj.id;
           treeobj.label = obj.name;
           treeobj.mesh = obj;
@@ -139,10 +179,13 @@ class Game extends React.Component {
           transparent: true,
           opacity: 0.2,
         });
+        // 边界面
         let mesh = new THREE.Mesh(geometry, material);
         SizeGroup.add(mesh);
+        // 边界线
         let border = new THREE.BoxHelper(mesh, 0x0ed5c7);
         SizeGroup.add(border);
+        // 标注尺寸
         let SizeLineX = this.SizeLine(Box3X);
         SizeLineX.position.y = Box3Y / 2 + 5;
         SizeLineX.position.z = -Box3Z / 2;
@@ -157,10 +200,12 @@ class Game extends React.Component {
         SizeLineZ.position.x = Box3X / 2;
         SizeLineZ.position.y = -Box3Y / 2 - 5;
         SizeGroup.add(SizeLineZ);
+        // 标注值
         this.sizeFun(Math.round(newV3.x), SizeLineX.position, "size1");
         this.sizeFun(Math.round(newV3.y), SizeLineY.position, "size2");
         this.sizeFun(Math.round(newV3.z), SizeLineZ.position, "size3");
         scene.add(obj);
+        this.setState({treeData, MeshArr});
         render();
       },
       onProgress.bind(this)
@@ -207,7 +252,7 @@ class Game extends React.Component {
      * 相机设置
      */
     let width = window.innerWidth - 200;
-    let height = window.innerHeight - 60;
+    let height = window.innerHeight - 100;
     let k = width / height;
     let s = 100;
     this.camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 20000);
@@ -237,6 +282,7 @@ class Game extends React.Component {
     renderer.setSize(width, height); //设置渲染区域尺寸
     renderer.setClearColor(0x000000, 1);
     document.getElementById("three-board").appendChild(renderer.domElement); //body元素中插入canvas对象
+    document.getElementById('three-board').addEventListener('click', this.choose.bind(this));
 
     // renderpass
     let renderPass = new THREE.RenderPass(scene, this.camera);
@@ -245,6 +291,7 @@ class Game extends React.Component {
       scene,
       this.camera
     );
+    this.setState({OutlinePass});
     OutlinePass.visibleEdgeColor = new THREE.Color(0, 1, 0);
     OutlinePass.hiddenEdgeColor = new THREE.Color(0, 1, 0);
     OutlinePass.edgeThickness = 3.0;
@@ -264,6 +311,27 @@ class Game extends React.Component {
       .getElementById("three-board")
       .appendChild(labelRenderer.domElement);
 
+    window.onresize = ()=> {
+        let width = window.innerWidth - 200;
+        let height = window.innerHeight - 100;
+        let bool = false;
+        OutlinePass.selectedObjects = [];
+        renderer.setSize(window.innerWidth - 200, window.innerHeight - 100);
+        k = (window.innerWidth - 200) / (window.innerHeight - 60);
+        this.camera.left = -s * k;
+        this.camera.right = s * k;
+        this.camera.top = s;
+        this.camera.bottom = -s;
+        this.camera.updateProjectionMatrix();
+        render.call(this);
+        this.setState({
+          width,
+          height,
+          bool,
+        })
+        // location.reload();
+    }
+
     function render() {
       // renderer.render(scene, this.camera);
       // requestAnimationFrame(render.bind(this));
@@ -276,19 +344,21 @@ class Game extends React.Component {
       this.camera,
       renderer.domElement
     ); //创建控件对象
-    controls.addEventListener("change", ()=> {
-      let {bool, currentModel, left, top} = this.state;
+    controls.addEventListener("change", () => {
+      let { bool, currentModel, left, top } = this.state;
       if (bool) {
         let worldPosition = new THREE.Vector3();
         currentModel = currentModel.getWorldPosition(worldPosition);
-        let standardVector = worldPosition.project(camera);
+        let standardVector = worldPosition.project(this.camera);
         let a = (window.innerWidth - 200) / 2;
-        let b = (window.innerHeight - 60) / 2;
+        let b = (window.innerHeight - 100) / 2;
         left = Math.round(standardVector.x * a + a) + 200;
-        top = Math.round(-standardVector.y * b + b) - 140 + 60;
+        top = Math.round(-standardVector.y * b + b) - 150 + 100;
         this.setState({
-          currentModel, left, top
-        })
+          currentModel,
+          left,
+          top,
+        });
       }
       render.call(this);
     });
@@ -297,6 +367,121 @@ class Game extends React.Component {
     // controls.maxZoom = 10;
 
     console.log(window.THREE, scene, controls);
+  }
+
+  choose(event) {
+    let { MeshArr, OutlinePass, scene, currentModel, ModelName, left, top, bool, cxtmenu } = this.state;
+    let Sx = event.clientX - 200;
+    let Sy = event.clientY - 100;
+    let x = (Sx / (window.innerWidth - 200)) * 2 - 1;
+    let y = -(Sy / (window.innerHeight - 100)) * 2 + 1;
+    let raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(new THREE.Vector2(x,y), this.camera);
+    let Arr = [];
+    MeshArr.forEach(function(Mesh) {
+        if (Mesh.material.visible === true) {
+            Arr.push(Mesh)
+        }
+    });
+    let intersects = raycaster.intersectObjects(Arr);
+    if (intersects.length > 0) {
+        if (currentModel) {
+            currentModel.traverse(function(object) {
+                if (object.type === 'Mesh') {
+                    object.material.color.copy(object.material.selfColor)
+                }
+            })
+        }
+        currentModel = intersects[0].object;
+        currentModel.material.color.set(0x409EFF);
+        ModelName = currentModel.parent.name;
+        scene.updateMatrixWorld(true);
+        let worldPosition = new THREE.Vector3();
+        currentModel.getWorldPosition(worldPosition);
+        let standardVector = worldPosition.project(this.camera);
+        let a = (window.innerWidth - 200) / 2;
+        let b = (window.innerHeight - 100) / 2;
+        left = Math.round(standardVector.x * a + a) + 200;
+        top = Math.round(-standardVector.y * b + b) - 150 + 100;
+        bool = true
+    } else {
+        bool = false;
+        if (currentModel) {
+            currentModel.traverse(function(object) {
+                if (object.type === 'Mesh') {
+                    object.material.color.copy(object.material.selfColor)
+                }
+            })
+        }
+        OutlinePass.selectedObjects = []
+    }
+    cxtmenu.bool = false;
+    this.setState({
+      currentModel,
+      left,
+      top,
+      ModelName,
+      cxtmenu,
+      bool
+    });
+    // render()
+}
+  onChange(value) {
+    console.log(`selected ${value}`);
+  }
+  MaxClick() {
+    console.log(`MaxClick`);
+  }
+  nodeClick(selectedKeys, info) {
+    let { currentModel } = this.state;
+    let data = info.node;
+    console.log(data);
+    let mesh = data.mesh;
+    if (currentModel) {
+        currentModel.traverse(function(object) {
+            if (object.type === 'Mesh') {
+                object.material.color.copy(object.material.selfColor)
+            }
+        })
+    }
+   currentModel = mesh;
+   currentModel.traverse(function(object) {
+        if (object.type === 'Mesh') {
+            object.material.color.set(0x409EFF)
+        }
+    });
+    this.setState({
+      currentModel,
+      bool: false,
+    });
+    // render()
+  }
+  helpClick() {
+    Modal.info({
+      title: "操作说明",
+      content: (
+        <div>
+          <p>
+            1.旋转：按住左键不放上下左右拖动，可以旋转整个场景
+            <br />
+            <br />
+            2.缩放：滚动鼠标中键可以缩放模型
+            <br />
+            <br />
+            3.选中：单击可以选中机械装配体中的一个零件，被选中的零件高亮显示，并弹出名称标签
+            <br />
+            <br />
+            4.交互：通过UI按钮可以和对三维模型进行交互操作，预览模型相关信息
+            <br />
+            <br />
+            5.右键隐藏显示：在某一个零件上右键可以通过弹窗UI隐藏或显示相关模型
+            <br />
+            <br />
+            6.目录树：左侧目录树可以显示每一个零件，通过目录树可以控制模型
+          </p>
+        </div>
+      ),
+    });
   }
 
   SizeLine(length) {
@@ -345,7 +530,106 @@ class Game extends React.Component {
   }
 
   render() {
-    return <div id="three-board"></div>;
+    let { options, SizeBool, treeData, progressValue, progressBool } = this.state;
+    return (
+      <>
+        <div className={`progress-con ${progressBool ? "" : "hide"}`}>
+          <Progress percent={progressValue} status="active" />
+        </div>
+        <div id="three-board"></div>
+        <div id="top">
+          <div className="c-logo">
+            <img src={imgList.i0} alt="" width="40" />
+          </div>
+          <div className="c-select">
+            <Select
+              placeholder=""
+              defaultValue="千斤顶"
+              onChange={this.onChange.bind(this)}
+            >
+              {options.map((item, index) => {
+                return (
+                  <Option value={item.value} key={index}>
+                    {item.label}
+                  </Option>
+                );
+              })}
+            </Select>
+          </div>
+          <div id="menu">
+            <i
+              className="max"
+              datatype="最大化"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className={`size ${SizeBool ? "SizeBool" : ""}`}
+              datatype="尺寸"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="smaller"
+              datatype="缩小"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="greater"
+              datatype="放大"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="zheng"
+              datatype="正视图"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="fu"
+              datatype="俯视图"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="ce"
+              datatype="侧视图"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="zhou"
+              datatype="轴测图"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="view"
+              datatype="显示"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+            <i
+              className="hide"
+              datatype="隐藏"
+              onClick={this.MaxClick.bind(this)}
+            ></i>
+          </div>
+          <div className="c-danger">
+            <i
+              className="help"
+              datatype="帮助"
+              onClick={this.helpClick.bind(this)}
+            ></i>
+          </div>
+        </div>
+        <div id="left">
+            <div>
+            <Tree
+              defaultExpandAll={true}
+              onSelect={this.nodeClick.bind(this)}
+              treeData={treeData}
+              ></Tree>
+            </div>
+        </div>
+        <div id="size1"></div>
+        <div id="size2"></div>
+        <div id="size3"></div>
+      </>
+    );
   }
 }
 
