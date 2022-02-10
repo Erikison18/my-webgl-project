@@ -5,6 +5,7 @@ import "./index.scss";
 import { Select, Modal, Tree, Progress } from "antd";
 import i0 from "./img/0.png";
 import i03 from "./img/03.jpg";
+import i1 from "./img/1.png";
 import px from "./img/px.jpg";
 import nx from "./img/nx.jpg";
 import py from "./img/py.jpg";
@@ -16,6 +17,7 @@ const { Option } = Select;
 const imgList = {
   i0,
   i03,
+  i1,
   px,
   nx,
   py,
@@ -50,9 +52,12 @@ class Game extends React.Component {
           label: "角接触轴承",
         },
       ],
+      length: 0,
       treeData: [],
+      selectedKeys: [],
       MeshArr: [],
       SizeBool: true,
+      SizeGroup: null,
       scene: null,
       progressValue: 0,
       progressBool: true,
@@ -60,12 +65,12 @@ class Game extends React.Component {
       currentModel: null,
       left: 0,
       top: 0,
-      ModelName: '',
+      ModelName: "",
       cxtmenu: {
         left: 400,
         top: 400,
         bool: false,
-    },
+      },
     };
   }
 
@@ -74,7 +79,9 @@ class Game extends React.Component {
      * 创建场景对象Scene
      */
     let scene = new window.THREE.Scene();
-    this.setState({ scene });
+    this.setState({ scene }, () => {
+      this.renderWebGL.call(this);
+    });
     // 轴辅助
     let AxesHelper = new THREE.AxesHelper(200);
     AxesHelper.position.y = -54;
@@ -85,10 +92,10 @@ class Game extends React.Component {
     let loader = new THREE.FBXLoader();
     let MeshArr = [];
     let textureCube = new THREE.CubeTextureLoader().load(
-      [imgList.px, imgList.nx, imgList.py, imgList.ny, imgList.pz, imgList.nz]
-      // function () {
-      //   render();
-      // }
+      [imgList.px, imgList.nx, imgList.py, imgList.ny, imgList.pz, imgList.nz],
+      () => {
+        this.renderWebGL();
+      }
     );
     let SizeGroup = new THREE.Group();
     let treeData = [
@@ -205,8 +212,9 @@ class Game extends React.Component {
         this.sizeFun(Math.round(newV3.y), SizeLineY.position, "size2");
         this.sizeFun(Math.round(newV3.z), SizeLineZ.position, "size3");
         scene.add(obj);
-        this.setState({treeData, MeshArr});
-        render();
+        this.setState({ treeData, MeshArr, SizeGroup });
+        this.renderWebGL();
+        this.renderWebGL();
       },
       onProgress.bind(this)
     );
@@ -257,6 +265,8 @@ class Game extends React.Component {
     let s = 100;
     this.camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 20000);
     this.camera.position.set(226, 118, 319);
+    let length = this.camera.position.length();
+    this.setState({ length });
     this.camera.lookAt(scene.position);
     // scene2
     let scene2 = new THREE.Scene();
@@ -282,7 +292,9 @@ class Game extends React.Component {
     renderer.setSize(width, height); //设置渲染区域尺寸
     renderer.setClearColor(0x000000, 1);
     document.getElementById("three-board").appendChild(renderer.domElement); //body元素中插入canvas对象
-    document.getElementById('three-board').addEventListener('click', this.choose.bind(this));
+    document
+      .getElementById("three-board")
+      .addEventListener("click", this.choose.bind(this));
 
     // renderpass
     let renderPass = new THREE.RenderPass(scene, this.camera);
@@ -291,54 +303,47 @@ class Game extends React.Component {
       scene,
       this.camera
     );
-    this.setState({OutlinePass});
+    this.setState({ OutlinePass });
     OutlinePass.visibleEdgeColor = new THREE.Color(0, 1, 0);
     OutlinePass.hiddenEdgeColor = new THREE.Color(0, 1, 0);
     OutlinePass.edgeThickness = 3.0;
-    let composer = new THREE.EffectComposer(renderer);
-    composer.addPass(renderPass);
-    composer.addPass(OutlinePass);
+    this.composer = new THREE.EffectComposer(renderer);
+    this.composer.addPass(renderPass);
+    this.composer.addPass(OutlinePass);
     let FXAAShaderPass = new THREE.ShaderPass(THREE.FXAAShader);
     FXAAShaderPass.uniforms["resolution"].value.set(1 / width, 1 / height);
     FXAAShaderPass.renderToScreen = true;
-    composer.addPass(FXAAShaderPass);
-    let labelRenderer = new THREE.CSS2DRenderer();
-    labelRenderer.setSize(width, height);
-    labelRenderer.domElement.style.position = "absolute";
-    labelRenderer.domElement.style.top = "0";
-    labelRenderer.domElement.style.pointerEvents = "none";
+    this.composer.addPass(FXAAShaderPass);
+    this.labelRenderer = new THREE.CSS2DRenderer();
+    this.labelRenderer.setSize(width, height);
+    this.labelRenderer.domElement.style.position = "absolute";
+    this.labelRenderer.domElement.style.top = "0";
+    this.labelRenderer.domElement.style.pointerEvents = "none";
     document
       .getElementById("three-board")
-      .appendChild(labelRenderer.domElement);
+      .appendChild(this.labelRenderer.domElement);
 
-    window.onresize = ()=> {
-        let width = window.innerWidth - 200;
-        let height = window.innerHeight - 100;
-        let bool = false;
-        OutlinePass.selectedObjects = [];
-        renderer.setSize(window.innerWidth - 200, window.innerHeight - 100);
-        k = (window.innerWidth - 200) / (window.innerHeight - 60);
-        this.camera.left = -s * k;
-        this.camera.right = s * k;
-        this.camera.top = s;
-        this.camera.bottom = -s;
-        this.camera.updateProjectionMatrix();
-        render.call(this);
-        this.setState({
-          width,
-          height,
-          bool,
-        })
-        // location.reload();
-    }
+    window.onresize = () => {
+      let width = window.innerWidth - 200;
+      let height = window.innerHeight - 100;
+      let bool = false;
+      OutlinePass.selectedObjects = [];
+      renderer.setSize(window.innerWidth - 200, window.innerHeight - 100);
+      k = (window.innerWidth - 200) / (window.innerHeight - 60);
+      this.camera.left = -s * k;
+      this.camera.right = s * k;
+      this.camera.top = s;
+      this.camera.bottom = -s;
+      this.camera.updateProjectionMatrix();
+      this.renderWebGL.call(this);
+      this.setState({
+        width,
+        height,
+        bool,
+      });
+      // location.reload();
+    };
 
-    function render() {
-      // renderer.render(scene, this.camera);
-      // requestAnimationFrame(render.bind(this));
-      composer.render();
-      labelRenderer.render(scene, this.camera);
-    }
-    render.call(this);
     // controls
     let controls = new window.THREE.OrbitControls(
       this.camera,
@@ -348,19 +353,18 @@ class Game extends React.Component {
       let { bool, currentModel, left, top } = this.state;
       if (bool) {
         let worldPosition = new THREE.Vector3();
-        currentModel = currentModel.getWorldPosition(worldPosition);
+        currentModel.getWorldPosition(worldPosition);
         let standardVector = worldPosition.project(this.camera);
         let a = (window.innerWidth - 200) / 2;
         let b = (window.innerHeight - 100) / 2;
         left = Math.round(standardVector.x * a + a) + 200;
         top = Math.round(-standardVector.y * b + b) - 150 + 100;
         this.setState({
-          currentModel,
           left,
           top,
         });
       }
-      render.call(this);
+      this.renderWebGL();
     });
     // controls.enablePan = false;
     // controls.minZoom = 0.1;
@@ -369,51 +373,70 @@ class Game extends React.Component {
     console.log(window.THREE, scene, controls);
   }
 
+  renderWebGL() {
+    let { scene } = this.state;
+    // renderer.render(scene, this.camera);
+    // requestAnimationFrame(render.bind(this));
+    this.composer.render();
+    this.labelRenderer.render(scene, this.camera);
+  }
+
   choose(event) {
-    let { MeshArr, OutlinePass, scene, currentModel, ModelName, left, top, bool, cxtmenu } = this.state;
+    let {
+      MeshArr,
+      OutlinePass,
+      scene,
+      currentModel,
+      ModelName,
+      left,
+      top,
+      bool,
+      cxtmenu,
+    } = this.state;
     let Sx = event.clientX - 200;
     let Sy = event.clientY - 100;
     let x = (Sx / (window.innerWidth - 200)) * 2 - 1;
     let y = -(Sy / (window.innerHeight - 100)) * 2 + 1;
     let raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(new THREE.Vector2(x,y), this.camera);
+    raycaster.setFromCamera(new THREE.Vector2(x, y), this.camera);
     let Arr = [];
-    MeshArr.forEach(function(Mesh) {
-        if (Mesh.material.visible === true) {
-            Arr.push(Mesh)
-        }
+    MeshArr.forEach(function (Mesh) {
+      if (Mesh.material.visible === true) {
+        Arr.push(Mesh);
+      }
     });
     let intersects = raycaster.intersectObjects(Arr);
     if (intersects.length > 0) {
-        if (currentModel) {
-            currentModel.traverse(function(object) {
-                if (object.type === 'Mesh') {
-                    object.material.color.copy(object.material.selfColor)
-                }
-            })
-        }
-        currentModel = intersects[0].object;
-        currentModel.material.color.set(0x409EFF);
-        ModelName = currentModel.parent.name;
-        scene.updateMatrixWorld(true);
-        let worldPosition = new THREE.Vector3();
-        currentModel.getWorldPosition(worldPosition);
-        let standardVector = worldPosition.project(this.camera);
-        let a = (window.innerWidth - 200) / 2;
-        let b = (window.innerHeight - 100) / 2;
-        left = Math.round(standardVector.x * a + a) + 200;
-        top = Math.round(-standardVector.y * b + b) - 150 + 100;
-        bool = true
+      console.log("currentModel", currentModel);
+      if (currentModel) {
+        currentModel.traverse(function (object) {
+          if (object.type === "Mesh") {
+            object.material.color.copy(object.material.selfColor);
+          }
+        });
+      }
+      currentModel = intersects[0].object;
+      currentModel.material.color.set(0x409eff);
+      ModelName = currentModel.parent.name;
+      scene.updateMatrixWorld(true);
+      let worldPosition = new THREE.Vector3();
+      currentModel.getWorldPosition(worldPosition);
+      let standardVector = worldPosition.project(this.camera);
+      let a = (window.innerWidth - 200) / 2;
+      let b = (window.innerHeight - 100) / 2;
+      left = Math.round(standardVector.x * a + a) + 200;
+      top = Math.round(-standardVector.y * b + b) - 150 + 100;
+      bool = true;
     } else {
-        bool = false;
-        if (currentModel) {
-            currentModel.traverse(function(object) {
-                if (object.type === 'Mesh') {
-                    object.material.color.copy(object.material.selfColor)
-                }
-            })
-        }
-        OutlinePass.selectedObjects = []
+      bool = false;
+      if (currentModel) {
+        currentModel.traverse(function (object) {
+          if (object.type === "Mesh") {
+            object.material.color.copy(object.material.selfColor);
+          }
+        });
+      }
+      OutlinePass.selectedObjects = [];
     }
     cxtmenu.bool = false;
     this.setState({
@@ -422,15 +445,122 @@ class Game extends React.Component {
       top,
       ModelName,
       cxtmenu,
-      bool
+      bool,
+    }, ()=> {
+      this.renderWebGL();
     });
-    // render()
-}
+  }
   onChange(value) {
     console.log(`selected ${value}`);
   }
   MaxClick() {
     console.log(`MaxClick`);
+    this.camera.zoom = 1;
+    this.camera.updateProjectionMatrix();
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  SizeClick() {
+    let { SizeBool, scene, SizeGroup } = this.state;
+    if (SizeBool) {
+      scene.add(SizeGroup);
+      this.setState({
+        SizeBool: false,
+      });
+      let arr = document.getElementsByClassName("label");
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].style.visibility = "visible";
+      }
+    } else {
+      let arr = document.getElementsByClassName("label");
+      for (let i = 0; i < arr.length; i++) {
+        arr[i].style.visibility = "hidden";
+      }
+      scene.remove(SizeGroup);
+      this.setState({
+        SizeBool: true,
+      });
+    }
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  SmallerClick() {
+    let { scene } = this.state;
+    scene.scale.x -= 0.1;
+    scene.scale.y -= 0.1;
+    scene.scale.z -= 0.1;
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  GreaterClick() {
+    let { scene } = this.state;
+    scene.scale.x += 0.1;
+    scene.scale.y += 0.1;
+    scene.scale.z += 0.1;
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  zhengClick() {
+    let { scene, length } = this.state;
+    this.camera.position.set(0, 0, length);
+    this.camera.lookAt(scene.position);
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  fuClick() {
+    let { scene, length } = this.state;
+    this.camera.position.set(0, length, 0);
+    this.camera.lookAt(scene.position);
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  ceClick() {
+    let { scene, length } = this.state;
+    this.camera.position.set(-length, 0, 0);
+    this.camera.lookAt(scene.position);
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  zhouClick() {
+    let { scene, length } = this.state;
+    let vec3 = new THREE.Vector3(1, 1, 1).normalize();
+    this.camera.position.set(vec3.x * length, vec3.y * length, vec3.z * length);
+    this.camera.lookAt(scene.position);
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  hideClick() {
+    let { MeshArr } = this.state;
+    MeshArr.forEach(function (mesh) {
+      mesh.material.visible = false;
+    });
+    this.setState({
+      bool: false,
+    });
+    this.renderWebGL();
+  }
+  viewClick() {
+    let { MeshArr } = this.state;
+    MeshArr.forEach(function (mesh) {
+      mesh.material.visible = true;
+    });
+    this.renderWebGL();
   }
   nodeClick(selectedKeys, info) {
     let { currentModel } = this.state;
@@ -438,23 +568,24 @@ class Game extends React.Component {
     console.log(data);
     let mesh = data.mesh;
     if (currentModel) {
-        currentModel.traverse(function(object) {
-            if (object.type === 'Mesh') {
-                object.material.color.copy(object.material.selfColor)
-            }
-        })
-    }
-   currentModel = mesh;
-   currentModel.traverse(function(object) {
-        if (object.type === 'Mesh') {
-            object.material.color.set(0x409EFF)
+      currentModel.traverse(function (object) {
+        if (object.type === "Mesh") {
+          object.material.color.copy(object.material.selfColor);
         }
+      });
+    }
+    currentModel = mesh;
+    currentModel.traverse(function (object) {
+      if (object.type === "Mesh") {
+        object.material.color.set(0x409eff);
+      }
     });
     this.setState({
+      selectedKeys,
       currentModel,
       bool: false,
     });
-    // render()
+    this.renderWebGL();
   }
   helpClick() {
     Modal.info({
@@ -530,7 +661,8 @@ class Game extends React.Component {
   }
 
   render() {
-    let { options, SizeBool, treeData, progressValue, progressBool } = this.state;
+    let { options, SizeBool, treeData, progressValue, progressBool, ModelName, bool, left, top, selectedKeys } =
+      this.state;
     return (
       <>
         <div className={`progress-con ${progressBool ? "" : "hide"}`}>
@@ -565,47 +697,47 @@ class Game extends React.Component {
             <i
               className={`size ${SizeBool ? "SizeBool" : ""}`}
               datatype="尺寸"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.SizeClick.bind(this)}
             ></i>
             <i
               className="smaller"
               datatype="缩小"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.SmallerClick.bind(this)}
             ></i>
             <i
               className="greater"
               datatype="放大"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.GreaterClick.bind(this)}
             ></i>
             <i
               className="zheng"
               datatype="正视图"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.zhengClick.bind(this)}
             ></i>
             <i
               className="fu"
               datatype="俯视图"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.fuClick.bind(this)}
             ></i>
             <i
               className="ce"
               datatype="侧视图"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.ceClick.bind(this)}
             ></i>
             <i
               className="zhou"
               datatype="轴测图"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.zhouClick.bind(this)}
             ></i>
             <i
               className="view"
               datatype="显示"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.viewClick.bind(this)}
             ></i>
             <i
               className="hide"
               datatype="隐藏"
-              onClick={this.MaxClick.bind(this)}
+              onClick={this.hideClick.bind(this)}
             ></i>
           </div>
           <div className="c-danger">
@@ -617,17 +749,31 @@ class Game extends React.Component {
           </div>
         </div>
         <div id="left">
-            <div>
-            <Tree
-              defaultExpandAll={true}
-              onSelect={this.nodeClick.bind(this)}
-              treeData={treeData}
-              ></Tree>
-            </div>
+          <div>
+            {
+              treeData.length > 0 ? <Tree
+                defaultExpandAll={true}
+                autoExpandParent={true}
+                onSelect={this.nodeClick.bind(this)}
+                treeData={treeData}
+                selectedKeys={bool ? [] : selectedKeys}
+              ></Tree> : null
+            }
+          </div>
         </div>
         <div id="size1"></div>
         <div id="size2"></div>
         <div id="size3"></div>
+        {
+          bool ? <>
+            <div id="name" style={{left: left + 180 + 'px', top: top - 24 + 'px'}}>
+                <span>{ ModelName }</span>
+            </div>
+            <div className="name-line" style={{left: left + 'px', top: top + 'px'}}>
+                <img src={imgList.i1} alt="" width="250"/>
+            </div>
+          </> : null
+        }
       </>
     );
   }

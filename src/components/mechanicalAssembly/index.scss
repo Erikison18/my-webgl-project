@@ -123,7 +123,21 @@
         background: transparent;
         .ant-tree-node-content-wrapper.ant-tree-node-selected{
             background-color: #222;
-            color: #ccc;
+            // color: #ccc;
+            color: #409eff;
         }
     }
+}
+#name{
+  position: absolute;
+  color: rgb(240, 156, 59);
+  font-size: 18px;
+  // left: 859px;
+  // top: 591px;
+}
+.name-line{
+  position: absolute;
+  pointer-events: none;
+  // left: 679px;
+  // top: 615px;
 }
