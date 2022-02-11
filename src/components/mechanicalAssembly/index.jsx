@@ -26,29 +26,36 @@ const imgList = {
   nz,
 };
 
+let textureCube = new THREE.CubeTextureLoader().load(
+  [imgList.px, imgList.nx, imgList.py, imgList.ny, imgList.pz, imgList.nz]
+  // () => {
+  //   this.renderWebGL();
+  // }
+);
+
 class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       options: [
         {
-          value: "千斤顶",
+          value: "qianjinding",
           label: "千斤顶",
         },
         {
-          value: "燃油管",
+          value: "rangyouguan",
           label: "燃油管",
         },
         {
-          value: "润滑油管",
+          value: "ruihuayouguan",
           label: "润滑油管",
         },
         {
-          value: "燃烧室",
+          value: "rangshaoshi",
           label: "燃烧室",
         },
         {
-          value: "角接触轴承",
+          value: "jiaojiechuzhouchen",
           label: "角接触轴承",
         },
       ],
@@ -62,6 +69,7 @@ class Game extends React.Component {
       progressValue: 0,
       progressBool: true,
       bool: false,
+      ModelGroup: null,
       currentModel: null,
       left: 0,
       top: 0,
@@ -91,12 +99,6 @@ class Game extends React.Component {
     // let texture = textureLoader.load(imgList.i03);
     let loader = new THREE.FBXLoader();
     let MeshArr = [];
-    let textureCube = new THREE.CubeTextureLoader().load(
-      [imgList.px, imgList.nx, imgList.py, imgList.ny, imgList.pz, imgList.nz],
-      () => {
-        this.renderWebGL();
-      }
-    );
     let SizeGroup = new THREE.Group();
     let treeData = [
       {
@@ -132,22 +134,7 @@ class Game extends React.Component {
           }
         });
         obj.children[0].children[0].name = "千斤顶";
-        recursion(obj.children[0].children[0], treeData[0]);
-        function recursion(obj, treeobj) {
-          treeobj.key = obj.id;
-          treeobj.title = obj.name;
-          treeobj.id = obj.id;
-          treeobj.label = obj.name;
-          treeobj.mesh = obj;
-          treeobj.children = [];
-          treeobj.viewBool = true;
-          let children = obj.children;
-          let children2 = treeobj.children;
-          for (let i = 0, l = children.length; i < l; i++) {
-            children2[i] = {};
-            recursion(children[i], children2[i]);
-          }
-        }
+        this.recursion(obj.children[0].children[0], treeData[0]);
         let box3 = new THREE.Box3();
         box3.expandByObject(obj);
         let v3 = new THREE.Vector3();
@@ -212,27 +199,12 @@ class Game extends React.Component {
         this.sizeFun(Math.round(newV3.y), SizeLineY.position, "size2");
         this.sizeFun(Math.round(newV3.z), SizeLineZ.position, "size3");
         scene.add(obj);
-        this.setState({ treeData, MeshArr, SizeGroup });
+        this.setState({ treeData, MeshArr, SizeGroup, ModelGroup });
         this.renderWebGL();
         this.renderWebGL();
       },
-      onProgress.bind(this)
+      this.onProgress.bind(this)
     );
-    function onProgress(xhr) {
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-      this.setState(
-        {
-          progressValue: Math.floor((xhr.loaded / xhr.total) * 100),
-        },
-        () => {
-          if (this.state.progressValue >= 100) {
-            this.setState({
-              progressBool: false,
-            });
-          }
-        }
-      );
-    }
 
     /**
      * 光源设置
@@ -373,6 +345,38 @@ class Game extends React.Component {
     console.log(window.THREE, scene, controls);
   }
 
+  onProgress(xhr) {
+    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+    this.setState(
+      {
+        progressValue: Math.floor((xhr.loaded / xhr.total) * 100),
+      },
+      () => {
+        if (this.state.progressValue >= 100) {
+          this.setState({
+            progressBool: false,
+          });
+        }
+      }
+    );
+  }
+
+  recursion(obj, treeobj) {
+    treeobj.key = obj.id;
+    treeobj.title = obj.name;
+    treeobj.id = obj.id;
+    treeobj.label = obj.name;
+    treeobj.mesh = obj;
+    treeobj.children = [];
+    treeobj.viewBool = true;
+    let children = obj.children;
+    let children2 = treeobj.children;
+    for (let i = 0, l = children.length; i < l; i++) {
+      children2[i] = {};
+      this.recursion(children[i], children2[i]);
+    }
+  }
+
   renderWebGL() {
     let { scene } = this.state;
     // renderer.render(scene, this.camera);
@@ -439,19 +443,149 @@ class Game extends React.Component {
       OutlinePass.selectedObjects = [];
     }
     cxtmenu.bool = false;
-    this.setState({
-      currentModel,
-      left,
-      top,
-      ModelName,
-      cxtmenu,
-      bool,
-    }, ()=> {
-      this.renderWebGL();
-    });
+    this.setState(
+      {
+        currentModel,
+        left,
+        top,
+        ModelName,
+        cxtmenu,
+        bool,
+      },
+      () => {
+        this.renderWebGL();
+      }
+    );
   }
   onChange(value) {
-    console.log(`selected ${value}`);
+    let data = JSON.parse(value);
+    console.log(`selected ${data}`);
+    let arr = document.getElementsByClassName("label");
+    for (let i = 0; i < arr.length; i++) {
+      arr[i].style.visibility = "hidden";
+    }
+    let { scene, SizeGroup, ModelGroup } = this.state;
+    SizeGroup.children = [];
+    scene.remove(ModelGroup);
+    scene.remove(SizeGroup);
+
+    this.setState(
+      {
+        SizeBool: true,
+        SizeGroup,
+        progressBool: true,
+        progressValue: 0,
+        bool: false,
+        treeData: [],
+      },
+      () => {
+        let { treeData, SizeGroup, ModelGroup } = this.state;
+        treeData = [{
+          key: "01010101",
+          title: data.label,
+          id: "01010101",
+          label: data.label,
+          mesh: null,
+          children: [],
+          viewBool: true,
+        }];
+        let MeshArr = [];
+        let loader = new THREE.FBXLoader();
+        loader.load(
+          `./mechanicalAssembly/${data.value}.fbx`,
+          (obj) => {
+            obj.rotateX(Math.PI / 2);
+            treeData[0].mesh = obj;
+            ModelGroup = obj;
+            console.log(ModelGroup);
+            obj.traverse(function (object) {
+              if (object.type === "Mesh") {
+                MeshArr.push(object);
+                object.material = new THREE.MeshPhysicalMaterial({
+                  color: object.material.color,
+                  metalness: 1.0,
+                  roughness: 0.6,
+                  envMap: textureCube,
+                });
+                object.material.selfColor = new THREE.Color().copy(
+                  object.material.color
+                );
+              }
+            });
+            if (obj.children[0].children[0].name === "插入螺钉") {
+              obj.children[0].children[0].name = "千斤顶";
+            }
+            this.recursion(obj.children[0].children[0], treeData[0]);
+            let box3 = new THREE.Box3();
+            box3.expandByObject(obj);
+            let v3 = new THREE.Vector3();
+            box3.getSize(v3);
+            function num() {
+              let max;
+              if (v3.x > v3.y) {
+                max = v3.x;
+              } else {
+                max = v3.y;
+              }
+              if (max > v3.z) {
+                console.log(max);
+              } else {
+                max = v3.z;
+              }
+              return max;
+            }
+            let S = 150 / num();
+            obj.scale.set(S, S, S);
+            let newBox3 = new THREE.Box3();
+            newBox3.expandByObject(obj);
+            let center = new THREE.Vector3();
+            newBox3.getCenter(center);
+            obj.position.x = obj.position.x - center.x;
+            obj.position.y = obj.position.y - center.y;
+            obj.position.z = obj.position.z - center.z;
+            let newV3 = new THREE.Vector3();
+            newBox3.getSize(newV3);
+            let Box3X = newV3.x + 5;
+            let Box3Y = newV3.y + 5;
+            let Box3Z = newV3.z + 5;
+            let geometry = new THREE.BoxGeometry(Box3X, Box3Y, Box3Z);
+            let material = new THREE.MeshPhongMaterial({
+              color: 0xffffff,
+              transparent: true,
+              opacity: 0.2,
+            });
+            let mesh = new THREE.Mesh(geometry, material);
+            SizeGroup.add(mesh);
+            let border = new THREE.BoxHelper(mesh, 0x0ed5c7);
+            SizeGroup.add(border);
+            let SizeLineX = this.SizeLine(Box3X);
+            SizeLineX.position.y = Box3Y / 2 + 5;
+            SizeLineX.position.z = -Box3Z / 2;
+            SizeGroup.add(SizeLineX);
+            let SizeLineY = this.SizeLine(Box3Y);
+            SizeLineY.rotateZ(Math.PI / 2);
+            SizeLineY.position.x = Box3X / 2 + 5;
+            SizeLineY.position.z = -Box3Z / 2;
+            SizeGroup.add(SizeLineY);
+            let SizeLineZ = this.SizeLine(Box3Z);
+            SizeLineZ.rotateY(Math.PI / 2);
+            SizeLineZ.position.x = Box3X / 2;
+            SizeLineZ.position.y = -Box3Y / 2 - 5;
+            SizeGroup.add(SizeLineZ);
+            this.sizeFun(Math.round(newV3.x), SizeLineX.position, "size1");
+            this.sizeFun(Math.round(newV3.y), SizeLineY.position, "size2");
+            this.sizeFun(Math.round(newV3.z), SizeLineZ.position, "size3");
+            this.setState({ treeData, MeshArr, SizeGroup, ModelGroup });
+            console.log(treeData, MeshArr, SizeGroup);
+            scene.add(obj);
+            this.renderWebGL();
+            this.renderWebGL();
+          },
+          this.onProgress.bind(this)
+        );
+        this.renderWebGL();
+      }
+    );
   }
   MaxClick() {
     console.log(`MaxClick`);
@@ -661,8 +795,18 @@ class Game extends React.Component {
   }
 
   render() {
-    let { options, SizeBool, treeData, progressValue, progressBool, ModelName, bool, left, top, selectedKeys } =
-      this.state;
+    let {
+      options,
+      SizeBool,
+      treeData,
+      progressValue,
+      progressBool,
+      ModelName,
+      bool,
+      left,
+      top,
+      selectedKeys,
+    } = this.state;
     return (
       <>
         <div className={`progress-con ${progressBool ? "" : "hide"}`}>
@@ -681,7 +825,7 @@ class Game extends React.Component {
             >
               {options.map((item, index) => {
                 return (
-                  <Option value={item.value} key={index}>
+                  <Option value={JSON.stringify(item)} key={index}>
                     {item.label}
                   </Option>
                 );
@@ -750,30 +894,36 @@ class Game extends React.Component {
         </div>
         <div id="left">
           <div>
-            {
-              treeData.length > 0 ? <Tree
+            {treeData.length > 0 ? (
+              <Tree
                 defaultExpandAll={true}
                 autoExpandParent={true}
                 onSelect={this.nodeClick.bind(this)}
                 treeData={treeData}
                 selectedKeys={bool ? [] : selectedKeys}
-              ></Tree> : null
-            }
+              ></Tree>
+            ) : null}
           </div>
         </div>
         <div id="size1"></div>
         <div id="size2"></div>
         <div id="size3"></div>
-        {
-          bool ? <>
-            <div id="name" style={{left: left + 180 + 'px', top: top - 24 + 'px'}}>
-                <span>{ ModelName }</span>
+        {bool ? (
+          <>
+            <div
+              id="name"
+              style={{ left: left + 180 + "px", top: top - 24 + "px" }}
+            >
+              <span>{ModelName}</span>
             </div>
-            <div className="name-line" style={{left: left + 'px', top: top + 'px'}}>
-                <img src={imgList.i1} alt="" width="250"/>
+            <div
+              className="name-line"
+              style={{ left: left + "px", top: top + "px" }}
+            >
+              <img src={imgList.i1} alt="" width="250" />
             </div>
-          </> : null
-        }
+          </>
+        ) : null}
       </>
     );
   }
